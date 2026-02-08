@@ -1,14 +1,18 @@
 {
   "name": "ollama-pilot",
-  "version": "1.0.0",
-  "description": "Interactive CLI for browsing and running Ollama models — with specs, performance stats, and one-command launch.",
+  "version": "1.1.0",
+  "description": "Complete CLI for managing Ollama models — browse, benchmark, pull, remove, annotate, and manage VRAM.",
   "type": "module",
   "bin": {
     "om": "./bin/om.js"
   },
+  "scripts": {
+    "postinstall": "node scripts/postinstall.js"
+  },
   "files": [
     "bin",
-    "lib"
+    "lib",
+    "scripts"
   ],
   "keywords": [
     "ollama",

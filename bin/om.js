@@ -1,46 +1,142 @@
 #!/usr/bin/env node
-import { readFileSync } from "fs";
 import { spawn } from "child_process";
-import { fileURLToPath } from "url";
-import { dirname, join } from "path";
-import { listModels, getLoaded, formatSize } from "../lib/ollama.js";
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const catalog = JSON.parse(
-  readFileSync(join(__dirname, "../lib/models.json"), "utf-8")
-);
+import { listModels } from "../lib/ollama.js";
+import { resolveModel } from "../lib/resolve.js";
 
 const RESET = "\x1b[0m";
 const BOLD = "\x1b[1m";
 const DIM = "\x1b[2m";
-const GREEN = "\x1b[32m";
 const CYAN = "\x1b[36m";
-const YELLOW = "\x1b[33m";
-const MAGENTA = "\x1b[35m";
+const GREEN = "\x1b[32m";
 
-function getInfo(name) {
-  if (catalog[name]) return catalog[name];
-  // try without tag
-  const base = name.split(":")[0];
-  for (const [key, val] of Object.entries(catalog)) {
-    if (key.split(":")[0] === base) return { ...val, description: val.description + " (variant)" };
-  }
-  return null;
-}
+const COMMANDS = {
+  "--ps":   { mod: "../lib/commands/ps.js",     desc: "Show loaded models" },
+  info:     { mod: "../lib/commands/info.js",    desc: "Detailed model info" },
+  bench:    { mod: "../lib/commands/bench.js",   desc: "Benchmark tok/s" },
+  pull:     { mod: "../lib/commands/pull.js",    desc: "Pull a model" },
+  rm:       { mod: "../lib/commands/rm.js",      desc: "Remove a model" },
+  unload:   { mod: "../lib/commands/unload.js",  desc: "Unload model from VRAM" },
+  note:     { mod: "../lib/commands/note.js",    desc: "Manage personal notes" },
+};
 
-async function main() {
-  const arg = process.argv[2];
+// Commands that take a model name/number as their next argument
+const MODEL_CMDS = new Set(["info", "bench", "rm", "unload", "note"]);
+const SUBCMDS = ["info", "bench", "pull", "rm", "unload", "note", "--ps", "--help"];
 
-  if (arg === "--help" || arg === "-h") {
-    console.log(`${BOLD}om${RESET} — Ollama model picker\n`);
-    console.log("Usage:");
-    console.log("  om          List available models");
-    console.log("  om <n>      Run model by number");
-    console.log("  om <name>   Run model by name");
-    console.log("  om --ps     Show loaded models");
+async function completions(args) {
+  const pos = args.length; // how many args after --completions
+  const prev = args[0];
+
+  // Position 1 after a subcommand that takes a model → complete model names
+  if (pos >= 1 && MODEL_CMDS.has(prev)) {
+    try {
+      const models = await listModels();
+      for (const m of models) console.log(m.name);
+    } catch { /* ollama unreachable, output nothing */ }
     process.exit(0);
   }
 
+  // Position 0 (or first arg) → subcommands + model names
+  try {
+    const models = await listModels();
+    for (const cmd of SUBCMDS) console.log(cmd);
+    for (const m of models) console.log(m.name);
+  } catch {
+    // Ollama down — still complete subcommands
+    for (const cmd of SUBCMDS) console.log(cmd);
+  }
+  process.exit(0);
+}
+
+function setupCompletions() {
+  const shell = process.env.SHELL || "";
+  if (shell.includes("zsh")) {
+    console.log(`# Add this to your ~/.zshrc:
+_om() {
+  local -a words
+  words=("\${(@f)$(om --completions "\${words[2,-1]}" 2>/dev/null)}")
+  compadd -a words
+}
+compdef _om om`);
+  } else {
+    console.log(`# Add this to your ~/.bashrc:
+_om() {
+  local cur="\${COMP_WORDS[COMP_CWORD]}"
+  local prev="\${COMP_WORDS[1]}"
+  if [ "\$COMP_CWORD" -ge 2 ]; then
+    COMPREPLY=($(compgen -W "$(om --completions "\$prev" 2>/dev/null)" -- "\$cur"))
+  else
+    COMPREPLY=($(compgen -W "$(om --completions 2>/dev/null)" -- "\$cur"))
+  fi
+}
+complete -F _om om`);
+  }
+  process.exit(0);
+}
+
+function showHelp() {
+  console.log();
+  console.log(`  ${BOLD}${CYAN}◆${RESET} ${BOLD}om${RESET} ${DIM}· Ollama model manager${RESET}`);
+  console.log(`  ${DIM}${"━".repeat(44)}${RESET}`);
+  console.log();
+  console.log(`  ${GREEN}Browse${RESET}`);
+  console.log(`    ${BOLD}om${RESET}                    ${DIM}List all models${RESET}`);
+  console.log(`    ${BOLD}om${RESET} ${CYAN}<n|name>${RESET}           ${DIM}Run model interactively${RESET}`);
+  console.log(`    ${BOLD}om --ps${RESET}               ${DIM}Loaded models + VRAM usage${RESET}`);
+  console.log(`    ${BOLD}om info${RESET} ${CYAN}<n|name>${RESET}      ${DIM}Details (family, quant, template)${RESET}`);
+  console.log();
+  console.log(`  ${GREEN}Manage${RESET}`);
+  console.log(`    ${BOLD}om pull${RESET} ${CYAN}<model>${RESET}       ${DIM}Pull with progress bar${RESET}`);
+  console.log(`    ${BOLD}om rm${RESET} ${CYAN}<n|name>${RESET}        ${DIM}Remove model${RESET}`);
+  console.log(`    ${BOLD}om unload${RESET} ${CYAN}[n|name]${RESET}    ${DIM}Free VRAM (all if omitted)${RESET}`);
+  console.log();
+  console.log(`  ${GREEN}Tools${RESET}`);
+  console.log(`    ${BOLD}om bench${RESET} ${CYAN}<n|name>${RESET}     ${DIM}Benchmark tok/s + load time${RESET}`);
+  console.log(`    ${BOLD}om note${RESET} ${CYAN}<n|name>${RESET} ${CYAN}[text]${RESET} ${DIM}Set/view notes${RESET}`);
+  console.log();
+  console.log(`  ${GREEN}Setup${RESET}`);
+  console.log(`    ${BOLD}om --setup-completions${RESET}  ${DIM}Print shell tab-completion script${RESET}`);
+  console.log();
+}
+
+async function run(modelName) {
+  console.log(`\n  ${BOLD}▸ Running ${modelName}${RESET}\n`);
+  const child = spawn("ollama", ["run", modelName], { stdio: "inherit" });
+  child.on("exit", (code) => process.exit(code ?? 0));
+}
+
+async function main() {
+  const args = process.argv.slice(2);
+  const cmd = args[0];
+
+  if (cmd === "--help" || cmd === "-h") {
+    showHelp();
+    process.exit(0);
+  }
+
+  if (cmd === "--completions") {
+    await completions(args.slice(1));
+  }
+
+  if (cmd === "--setup-completions") {
+    setupCompletions();
+  }
+
+  // No args — list models
+  if (!cmd) {
+    const { default: list } = await import("../lib/commands/list.js");
+    await list();
+    process.exit(0);
+  }
+
+  // Known command — dispatch
+  if (COMMANDS[cmd]) {
+    const { default: handler } = await import(COMMANDS[cmd].mod);
+    await handler(args.slice(1));
+    process.exit(0);
+  }
+
+  // Otherwise — run model by number or name
   let models;
   try {
     models = await listModels();
@@ -49,73 +145,16 @@ async function main() {
     process.exit(1);
   }
 
-  if (models.length === 0) {
-    console.log("No models installed.");
-    process.exit(0);
+  const { model } = await resolveModel(cmd);
+  if (!model) {
+    console.error(`Model "${cmd}" not found. Run 'om' to list.`);
+    process.exit(1);
   }
 
-  if (arg === "--ps") {
-    const loaded = await getLoaded();
-    if (loaded.length === 0) {
-      console.log(`${DIM}No models loaded in memory.${RESET}`);
-    } else {
-      for (const m of loaded) {
-        console.log(`${GREEN}●${RESET} ${BOLD}${m.name}${RESET}  ${DIM}ctx:${m.context_length || "?"}  vram:${formatSize(m.size_vram || m.size)}${RESET}`);
-      }
-    }
-    process.exit(0);
-  }
-
-  // No arg — list models
-  if (!arg) {
-    const loaded = await getLoaded();
-    const loadedNames = new Set(loaded.map((m) => m.name));
-
-    console.log(`\n${BOLD}  Ollama Models${RESET}\n`);
-
-    for (let i = 0; i < models.length; i++) {
-      const m = models[i];
-      const info = getInfo(m.name);
-      const num = `${DIM}${String(i + 1).padStart(2)})${RESET}`;
-      const active = loadedNames.has(m.name) ? ` ${GREEN}●${RESET}` : "";
-      const name = `${BOLD}${m.name}${RESET}${active}`;
-      const size = `${DIM}${formatSize(m.size)}${RESET}`;
-
-      console.log(`  ${num} ${name}  ${size}`);
-
-      if (info) {
-        const desc = `     ${DIM}${info.description}${RESET}`;
-        const stats = `     ${CYAN}${info.type}${RESET} ${DIM}·${RESET} ${MAGENTA}${info.params}${RESET} ${DIM}·${RESET} ${YELLOW}~${info.tokPerSec} tok/s${RESET}`;
-        console.log(desc);
-        console.log(stats);
-      }
-      console.log();
-    }
-
-    console.log(`  ${DIM}Run: om <number> or om <name>${RESET}\n`);
-    process.exit(0);
-  }
-
-  // Pick by number or name
-  let modelName;
-  const n = parseInt(arg, 10);
-  if (!isNaN(n) && n >= 1 && n <= models.length) {
-    modelName = models[n - 1].name;
-  } else {
-    const match = models.find(
-      (m) => m.name === arg || m.name.startsWith(arg + ":")
-    );
-    if (match) {
-      modelName = match.name;
-    } else {
-      console.error(`Model "${arg}" not found. Run 'om' to list.`);
-      process.exit(1);
-    }
-  }
-
-  console.log(`${BOLD}Running ${modelName}${RESET}\n`);
-  const child = spawn("ollama", ["run", modelName], { stdio: "inherit" });
-  child.on("exit", (code) => process.exit(code ?? 0));
+  await run(model.name);
 }
 
-main();
+main().catch((err) => {
+  console.error(err.message);
+  process.exit(1);
+});

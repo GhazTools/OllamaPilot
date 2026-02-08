@@ -1,25 +1,22 @@
 # OllamaPilot
 
-Interactive CLI for browsing and running your local [Ollama](https://ollama.com) models. See model specs, expected performance, and launch with a single command.
+Complete CLI for managing your local [Ollama](https://ollama.com) models — browse, benchmark, pull, remove, annotate, and manage VRAM.
 
 ```
 $ om
 
-  Ollama Models
+  ◆ om · Ollama Models
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-   1) qwen3-coder:30b-64k  ●  17.3 GB
+   1  qwen3-coder:30b-64k  17.3 GB  [Q4_K_M] ●
       MoE coding model, 64k context. Tuned for Claude Code.
-      MoE · 30.5B (3.3B active) · ~55 tok/s
-
-   2) qwen3:14b  8.6 GB
+      MoE · 30.5B (3.3B active) · ⚡ 55 tok/s
+  ────────────────────────────────────────────
+   2  qwen3:14b  8.6 GB  [Q4_K_M]
       General-purpose model with thinking mode. Lighter weight.
-      Dense · 14B · ~40 tok/s
+      Dense · 14B · ⚡ 40 tok/s
 
-   3) qwen2.5-coder:32b  18.5 GB
-      Dense coding model. Slower but higher quality for complex tasks.
-      Dense · 32B · ~11 tok/s
-
-  Run: om <number> or om <name>
+  ▸ om <number>  or  om <name>  to run
 ```
 
 ## Install
@@ -38,43 +35,41 @@ cd OllamaPilot
 npm link
 ```
 
-## Usage
+Tab completion for bash/zsh is installed automatically. Run `source ~/.zshrc` (or open a new terminal) to activate.
 
-### List models
+## Commands
 
-```bash
-om
-```
-
-Shows all installed Ollama models with descriptions, architecture type, parameter count, and expected tokens/second. A green `●` marks models currently loaded in memory.
-
-### Run a model by number
+### Browse
 
 ```bash
-om 1
+om                    # List all models with quant, notes, live metadata
+om 1                  # Run model by number
+om qwen3-coder        # Run model by name (partial match)
+om --ps               # Show loaded models + VRAM + expiry
+om info 1             # Model details (family, params, quant, template, license)
 ```
 
-Picks model #1 from the list and starts an interactive `ollama run` session.
-
-### Run a model by name
+### Manage
 
 ```bash
-om qwen3-coder
+om pull qwen3:8b      # Pull model with progress bar
+om rm 4               # Remove model (with confirmation)
+om unload             # Free all VRAM
+om unload 1           # Unload specific model from VRAM
 ```
 
-Fuzzy-matches installed model names — you don't need the full tag.
-
-### Check loaded models
+### Tools
 
 ```bash
-om --ps
+om bench 1            # Benchmark tok/s, prompt eval, load time
+om note 1 "daily driver"  # Set a personal note
+om note 1             # View note
+om note 1 --clear     # Clear note
 ```
-
-Shows which models are currently loaded in VRAM/memory, their context length, and memory usage.
 
 ## Model Catalog
 
-OllamaPilot ships with a built-in catalog (`lib/models.json`) that provides descriptions and performance data for known models. Unknown models still appear in the list — they just won't have extra metadata.
+OllamaPilot ships with a built-in catalog (`lib/models.json`) that provides descriptions and performance data for known models. Unknown models still appear in the list with live metadata from the Ollama API (family, parameter size, quantization).
 
 To add or update model info, edit `lib/models.json`:
 
@@ -97,6 +92,8 @@ OllamaPilot respects the `OLLAMA_HOST` environment variable. If not set, it defa
 export OLLAMA_HOST="192.168.1.100:11434"
 om
 ```
+
+Personal notes are stored at `~/.config/om/notes.json`.
 
 ## License
 
