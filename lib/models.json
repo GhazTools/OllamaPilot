@@ -1,0 +1,26 @@
+{
+  "qwen3-coder:30b": {
+    "description": "MoE coding model (3.3B active). Fast daily driver with thinking mode.",
+    "tokPerSec": 55,
+    "type": "MoE",
+    "params": "30.5B (3.3B active)"
+  },
+  "qwen3-coder:30b-64k": {
+    "description": "MoE coding model, 64k context. Tuned for Claude Code.",
+    "tokPerSec": 55,
+    "type": "MoE",
+    "params": "30.5B (3.3B active)"
+  },
+  "qwen2.5-coder:32b": {
+    "description": "Dense coding model. Slower but higher quality for complex tasks.",
+    "tokPerSec": 11,
+    "type": "Dense",
+    "params": "32B"
+  },
+  "qwen3:14b": {
+    "description": "General-purpose model with thinking mode. Lighter weight.",
+    "tokPerSec": 40,
+    "type": "Dense",
+    "params": "14B"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "name": "ollama-pilot",
+  "version": "1.0.0",
+  "description": "Interactive CLI for browsing and running Ollama models — with specs, performance stats, and one-command launch.",
+  "type": "module",
+  "bin": {
+    "om": "./bin/om.js"
+  },
+  "files": [
+    "bin",
+    "lib"
+  ],
+  "keywords": [
+    "ollama",
+    "llm",
+    "cli",
+    "model-picker",
+    "local-ai"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/GhazTools/OllamaPilot"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  }
+}
