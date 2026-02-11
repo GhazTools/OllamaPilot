@@ -5,22 +5,34 @@
     "type": "MoE",
     "params": "30.5B (3.3B active)"
   },
-  "qwen3-coder:30b-64k": {
-    "description": "MoE coding model, 64k context. Tuned for Claude Code.",
-    "tokPerSec": 55,
-    "type": "MoE",
-    "params": "30.5B (3.3B active)"
-  },
-  "qwen2.5-coder:32b": {
-    "description": "Dense coding model. Slower but higher quality for complex tasks.",
-    "tokPerSec": 11,
+  "deepseek-r1:14b": {
+    "description": "Reasoning model distilled from DeepSeek-R1. Architecture design + tradeoff analysis.",
+    "tokPerSec": 19,
     "type": "Dense",
-    "params": "32B"
+    "params": "14.8B"
+  },
+  "gemma3:12b": {
+    "description": "Vision + general multimodal model. Handles images, diagrams, screenshots.",
+    "tokPerSec": 24,
+    "type": "Dense",
+    "params": "12.2B"
   },
   "qwen3:14b": {
     "description": "General-purpose model with thinking mode. Lighter weight.",
-    "tokPerSec": 40,
+    "tokPerSec": 23,
     "type": "Dense",
     "params": "14B"
+  },
+  "mistral-small3.1:latest": {
+    "description": "Coding model by mistral",
+    "tokPerSec": 23,
+    "type": "Dense",
+    "params": "24b"
+  },
+  "gpt-oss:20b": {
+    "description": "Gpt oss model",
+    "tokPerSec": 23,
+    "type": "Dense",
+    "params": "20b"
   }
 }
