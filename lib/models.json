@@ -1,38 +1,98 @@
 {
   "qwen3-coder:30b": {
     "description": "MoE coding model (3.3B active). Fast daily driver with thinking mode.",
-    "tokPerSec": 55,
+    "promptTokPerSec": 33.8,
+    "genTokPerSec": 53.2,
     "type": "MoE",
-    "params": "30.5B (3.3B active)"
+    "params": "30.5B (3.3B active)",
+    "lastBenchmark": "2026-02-11T06:14:59.106Z",
+    "parameters": {
+      "num_ctx": 8192,
+      "num_predict": 512,
+      "temperature": 0.8,
+      "top_k": 80,
+      "top_p": 0.95,
+      "repeat_penalty": 1.1
+    }
   },
   "deepseek-r1:14b": {
     "description": "Reasoning model distilled from DeepSeek-R1. Architecture design + tradeoff analysis.",
-    "tokPerSec": 19,
+    "promptTokPerSec": 45,
+    "genTokPerSec": 25.5,
     "type": "Dense",
-    "params": "14.8B"
+    "params": "14.8B",
+    "parameters": {
+      "num_ctx": 2048,
+      "num_predict": 512,
+      "temperature": 0.8,
+      "top_k": 80,
+      "top_p": 0.95,
+      "repeat_penalty": 1.1
+    },
+    "lastBenchmark": "2026-02-11T06:16:34.947Z"
   },
   "gemma3:12b": {
     "description": "Vision + general multimodal model. Handles images, diagrams, screenshots.",
-    "tokPerSec": 24,
+    "promptTokPerSec": 60,
+    "genTokPerSec": 26.8,
     "type": "Dense",
-    "params": "12.2B"
+    "params": "12.2B",
+    "parameters": {
+      "num_ctx": 32768,
+      "num_predict": 512,
+      "temperature": 0.8,
+      "top_k": 80,
+      "top_p": 0.95,
+      "repeat_penalty": 1.1
+    },
+    "lastBenchmark": "2026-02-11T06:17:13.424Z"
   },
   "qwen3:14b": {
     "description": "General-purpose model with thinking mode. Lighter weight.",
-    "tokPerSec": 23,
+    "promptTokPerSec": 58,
+    "genTokPerSec": 24.1,
     "type": "Dense",
-    "params": "14B"
+    "params": "14B",
+    "parameters": {
+      "num_ctx": 8192,
+      "num_predict": 512,
+      "temperature": 0.8,
+      "top_k": 80,
+      "top_p": 0.95,
+      "repeat_penalty": 1.1
+    },
+    "lastBenchmark": "2026-02-11T06:18:33.279Z"
   },
-  "mistral-small3.1:latest": {
+  "devstral:latest": {
     "description": "Coding model by mistral",
-    "tokPerSec": 23,
+    "promptTokPerSec": 116.6,
+    "genTokPerSec": 15.9,
     "type": "Dense",
-    "params": "24b"
+    "params": "24b",
+    "lastBenchmark": "2026-02-11T06:20:29.786Z",
+    "parameters": {
+      "num_ctx": 4096,
+      "num_predict": 512,
+      "temperature": 0.8,
+      "top_k": 80,
+      "top_p": 0.95,
+      "repeat_penalty": 1.1
+    }
   },
   "gpt-oss:20b": {
-    "description": "Gpt oss model",
-    "tokPerSec": 23,
+    "description": "Gpt oss model for speed",
+    "promptTokPerSec": 238,
+    "genTokPerSec": 61.4,
     "type": "Dense",
-    "params": "20b"
+    "params": "20b",
+    "lastBenchmark": "2026-02-11T06:21:45.436Z",
+    "parameters": {
+      "num_ctx": 2048,
+      "temperature": 0.8,
+      "num_predict": 512,
+      "top_k": 80,
+      "top_p": 0.95,
+      "repeat_penalty": 1.1
+    }
   }
 }

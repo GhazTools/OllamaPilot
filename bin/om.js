@@ -11,17 +11,22 @@ const GREEN = "\x1b[32m";
 
 const COMMANDS = {
   "--ps":   { mod: "../lib/commands/ps.js",     desc: "Show loaded models" },
+  launch:   { mod: "../lib/commands/launch.js",  desc: "Launch model interactively" },
   info:     { mod: "../lib/commands/info.js",    desc: "Detailed model info" },
   bench:    { mod: "../lib/commands/bench.js",   desc: "Benchmark tok/s" },
+  analyze:  { mod: "../lib/commands/analyze.js",  desc: "Analyze model speed" },
+  compare:  { mod: "../lib/commands/compare.js",  desc: "Compare settings" },
   pull:     { mod: "../lib/commands/pull.js",    desc: "Pull a model" },
   rm:       { mod: "../lib/commands/rm.js",      desc: "Remove a model" },
   unload:   { mod: "../lib/commands/unload.js",  desc: "Unload model from VRAM" },
   note:     { mod: "../lib/commands/note.js",    desc: "Manage personal notes" },
+  set:      { mod: "../lib/commands/set.js",     desc: "Configure model parameters" },
+  optimize: { mod: "../lib/commands/optimize.js", desc: "Apply performance presets" },
 };
 
 // Commands that take a model name/number as their next argument
-const MODEL_CMDS = new Set(["info", "bench", "rm", "unload", "note"]);
-const SUBCMDS = ["info", "bench", "pull", "rm", "unload", "note", "--ps", "--help"];
+const MODEL_CMDS = new Set(["launch", "info", "bench", "analyze", "compare", "rm", "unload", "note", "set", "optimize"]);
+const SUBCMDS = ["launch", "info", "bench", "analyze", "compare", "pull", "rm", "unload", "note", "set", "optimize", "--ps", "--help"];
 
 async function completions(args) {
   const pos = args.length; // how many args after --completions
@@ -84,14 +89,25 @@ function showHelp() {
   console.log(`    ${BOLD}om${RESET} ${CYAN}<n|name>${RESET}           ${DIM}Run model interactively${RESET}`);
   console.log(`    ${BOLD}om --ps${RESET}               ${DIM}Loaded models + VRAM usage${RESET}`);
   console.log(`    ${BOLD}om info${RESET} ${CYAN}<n|name>${RESET}      ${DIM}Details (family, quant, template)${RESET}`);
+  console.log(`    ${BOLD}om analyze${RESET} ${CYAN}<n|name>${RESET}   ${DIM}Speed analysis + suggestions${RESET}`);
+  console.log();
+  console.log(`  ${GREEN}Launch${RESET}`);
+  console.log(`    ${BOLD}om launch${RESET} ${CYAN}<n|name>${RESET}   ${DIM}Launch model (alias for run)${RESET}`);
+  console.log(`    ${BOLD}om launch${RESET} ${CYAN}--model <name>${RESET} ${DIM}Launch specific model${RESET}`);
   console.log();
   console.log(`  ${GREEN}Manage${RESET}`);
   console.log(`    ${BOLD}om pull${RESET} ${CYAN}<model>${RESET}       ${DIM}Pull with progress bar${RESET}`);
   console.log(`    ${BOLD}om rm${RESET} ${CYAN}<n|name>${RESET}        ${DIM}Remove model${RESET}`);
   console.log(`    ${BOLD}om unload${RESET} ${CYAN}[n|name]${RESET}    ${DIM}Free VRAM (all if omitted)${RESET}`);
   console.log();
-  console.log(`  ${GREEN}Tools${RESET}`);
+  console.log(`  ${GREEN}Performance${RESET}`);
   console.log(`    ${BOLD}om bench${RESET} ${CYAN}<n|name>${RESET}     ${DIM}Benchmark tok/s + load time${RESET}`);
+  console.log(`    ${BOLD}om analyze${RESET} ${CYAN}<n|name>${RESET}   ${DIM}Speed analysis + optimization tips${RESET}`);
+  console.log(`    ${BOLD}om compare${RESET} ${CYAN}<n|name>${RESET}   ${DIM}Test multiple settings${RESET}`);
+  console.log(`    ${BOLD}om optimize${RESET} ${CYAN}<n|name>${RESET} ${CYAN}fast${RESET} ${DIM}Apply speed preset${RESET}`);
+  console.log();
+  console.log(`  ${GREEN}Config${RESET}`);
+  console.log(`    ${BOLD}om set${RESET} ${CYAN}<n|name>${RESET} ${CYAN}<param> <val>${RESET} ${DIM}Configure parameters${RESET}`);
   console.log(`    ${BOLD}om note${RESET} ${CYAN}<n|name>${RESET} ${CYAN}[text]${RESET} ${DIM}Set/view notes${RESET}`);
   console.log();
   console.log(`  ${GREEN}Setup${RESET}`);
