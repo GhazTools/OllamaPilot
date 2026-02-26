@@ -1,11 +1,11 @@
 {
   "qwen3-coder:30b": {
     "description": "MoE coding model (3.3B active). Fast daily driver with thinking mode.",
-    "promptTokPerSec": 33.8,
-    "genTokPerSec": 53.2,
+    "promptTokPerSec": 45.3,
+    "genTokPerSec": 60.7,
     "type": "MoE",
     "params": "30.5B (3.3B active)",
-    "lastBenchmark": "2026-02-11T06:14:59.106Z",
+    "lastBenchmark": "2026-02-23T05:52:27.919Z",
     "parameters": {
       "num_ctx": 8192,
       "num_predict": 512,
@@ -17,7 +17,7 @@
   },
   "deepseek-r1:14b": {
     "description": "Reasoning model distilled from DeepSeek-R1. Architecture design + tradeoff analysis.",
-    "promptTokPerSec": 45,
+    "promptTokPerSec": 77.4,
     "genTokPerSec": 25.5,
     "type": "Dense",
     "params": "14.8B",
@@ -29,7 +29,7 @@
       "top_p": 0.95,
       "repeat_penalty": 1.1
     },
-    "lastBenchmark": "2026-02-11T06:16:34.947Z"
+    "lastBenchmark": "2026-02-23T17:54:16.802Z"
   },
   "gemma3:12b": {
     "description": "Vision + general multimodal model. Handles images, diagrams, screenshots.",
@@ -49,8 +49,8 @@
   },
   "qwen3:14b": {
     "description": "General-purpose model with thinking mode. Lighter weight.",
-    "promptTokPerSec": 58,
-    "genTokPerSec": 24.1,
+    "promptTokPerSec": 86.3,
+    "genTokPerSec": 23,
     "type": "Dense",
     "params": "14B",
     "parameters": {
@@ -61,15 +61,15 @@
       "top_p": 0.95,
       "repeat_penalty": 1.1
     },
-    "lastBenchmark": "2026-02-11T06:18:33.279Z"
+    "lastBenchmark": "2026-02-12T02:12:23.217Z"
   },
   "devstral:latest": {
     "description": "Coding model by mistral",
-    "promptTokPerSec": 116.6,
-    "genTokPerSec": 15.9,
+    "promptTokPerSec": 119.3,
+    "genTokPerSec": 14.1,
     "type": "Dense",
     "params": "24b",
-    "lastBenchmark": "2026-02-11T06:20:29.786Z",
+    "lastBenchmark": "2026-02-23T05:50:59.845Z",
     "parameters": {
       "num_ctx": 4096,
       "num_predict": 512,
@@ -81,11 +81,11 @@
   },
   "gpt-oss:20b": {
     "description": "Gpt oss model for speed",
-    "promptTokPerSec": 238,
-    "genTokPerSec": 61.4,
+    "promptTokPerSec": 125.5,
+    "genTokPerSec": 60.1,
     "type": "Dense",
     "params": "20b",
-    "lastBenchmark": "2026-02-11T06:21:45.436Z",
+    "lastBenchmark": "2026-02-23T05:58:15.276Z",
     "parameters": {
       "num_ctx": 2048,
       "temperature": 0.8,
