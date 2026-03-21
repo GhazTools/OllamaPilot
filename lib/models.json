@@ -49,8 +49,8 @@
   },
   "qwen3:14b": {
     "description": "General-purpose model with thinking mode. Lighter weight.",
-    "promptTokPerSec": 86.3,
-    "genTokPerSec": 23,
+    "promptTokPerSec": 58.9,
+    "genTokPerSec": 24.4,
     "type": "Dense",
     "params": "14B",
     "parameters": {
@@ -61,7 +61,7 @@
       "top_p": 0.95,
       "repeat_penalty": 1.1
     },
-    "lastBenchmark": "2026-02-12T02:12:23.217Z"
+    "lastBenchmark": "2026-03-03T03:15:53.156Z"
   },
   "devstral:latest": {
     "description": "Coding model by mistral",
