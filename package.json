@@ -1,6 +1,6 @@
 {
   "name": "ollama-pilot",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Complete CLI for managing Ollama models — browse, benchmark, pull, remove, annotate, and manage VRAM.",
   "type": "module",
   "bin": {
