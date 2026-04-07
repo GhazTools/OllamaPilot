@@ -28,5 +28,8 @@
   "license": "MIT",
   "engines": {
     "node": ">=18"
+  },
+  "publishConfig": {
+    "registry": "https://npm.somniatore.com"
   }
 }
